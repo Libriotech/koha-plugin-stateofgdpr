@@ -6,6 +6,6 @@ Tries to give some insights into the state of GDPR-compliance in your Koha insta
 
 =head1 AUTHOR
 
-Magnus Enger <mmagnus@libriotech.no>
+Magnus Enger <magnus@libriotech.no>
 
 =cut
