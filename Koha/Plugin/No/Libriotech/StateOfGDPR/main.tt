@@ -1,0 +1,250 @@
+[% INCLUDE 'doc-head-open.inc' %]
+ <title>Koha: State of GDPR</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body>
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+
+<div id="breadcrumbs">
+    <a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; 
+    <a href="/cgi-bin/koha/plugins/plugins-home.pl">Plugins</a> &rsaquo; 
+    <a href="run.pl?class=Koha::Plugin::No::Libriotech::StateOfGDPR&method=report">State of GDPR</a>
+</div>
+
+<div id="doc3" class="yui-t1">
+    <div id="bd">
+        <div id="yui-main">
+            <div class="yui-b">
+                <div class="details">
+
+<h1>State of GDPR</h1>
+
+<div id="gdprtabs" class="toptabs numbered">
+    <ul>
+        <li><a href="#deleted_borrowers">Deleted borrowers</a></li>
+        <li><a href="#gender">Gender</a></li>
+        <li><a href="#privacy">Privacy</a></li>
+        <li><a href="#old_loans">Old loans</a></li>
+        <li><a href="#last_borrower">Last borrower</a></li>
+        <li><a href="#old_reserves">Old reserves</a></li>
+        <li><a href="#stats">Statistics</a></li>
+        <li><a href="#messages">Messages</a></li>
+        <li><a href="#misc">Misc</a></li>
+        <li><a href="#todo">TODO</a></li>
+    </ul>
+
+<div id="deleted_borrowers">
+
+<h2>Deleted borrowers</h2>
+
+<p>Number of deleted borrowers in the "deletedborrowers" table: [% deletedborrowers %].</p>
+<p>Oldest: [% deletedborrowers_oldest %]</p>
+<p>Newest: [% deletedborrowers_newest %]</p>
+
+<hr><p>Tables:
+<a href="http://schema.koha-community.org/19_05/tables/borrowers.html">borrowers</a>,
+<a href="http://schema.koha-community.org/19_05/tables/deletedborrowers.html">deletedborrowers</a>
+</p>
+
+</div>
+<div id="gender">
+
+<h2>Gender</h2>
+
+<p>You are tracking the gender of:</p>
+<ul>
+<li>[% gender %] current patrons</li>
+<li>[% gender_del %] deleted patrons</li>
+</ul>
+
+<hr><p>Tables:
+<a href="http://schema.koha-community.org/19_05/tables/borrowers.html">borrowers</a>,
+<a href="http://schema.koha-community.org/19_05/tables/deletedborrowers.html">deletedborrowers</a>
+</p>
+
+</div>
+<div id="privacy">
+
+<h2>Privacy</h2>
+
+<p>These are the privacy settings of you current patrons.</p>
+
+<p>You have set the syspref OPACPrivacy to [% opacprivacy %], which means that patrons can[% IF opacprivacy == 0 %]'t[% END %] change their own privacy in the OPAC. (And opacuserlogin is set to [% opacuserlogin %].)
+
+<p>"Default privacy" is the privacy setting of the patron category the patron belongs to.</p>
+<p>"Actual privacy" is the actual privacy setting of a patron.</p>
+
+[% privacy_names = {
+    '0' => 'forever',
+    '1' => 'default',
+    '2' => 'never',
+} %]
+
+<table>
+<tr><th>Category</th><th>Code</th><th>Default privacy</th><th>Actual privacy</th><th>Number of patrons</th></tr>
+[% FOREACH p IN privacy %]
+<tr><td>[% p.description %]</td><td>[% p.categorycode %]</td><td>[% p.default_privacy %]</td><td>[% privacy_names.${p.privacy} %]</td><td>[% p.count %]</td></tr>
+[% END %]
+</table>
+
+<p>Explanation for the privacy settings:</p>
+
+<ul>
+<li>default = loans are anonymized when the batch_anonymise.pl script is run</li>
+<li>forever = loans are kept forever (never anonymized)</li>
+<li>never   = loans are never kept (anonymized immediately on return)</li>
+</ul>
+
+<hr><p>Tables:
+<a href="http://schema.koha-community.org/19_05/tables/borrowers.html">borrowers</a>
+</p>
+
+</div>
+<div id="old_loans">
+
+<h2>Old loans</h2>
+
+<p>You have [% old_issues %] old loans. [% old_issues_anonymized %] of these have been anonymized. That is [% old_issues_anonymized * 100 / old_issues %]%.</p>
+
+<p>The oldest non-anonymized loan is from [% old_issues_nonanon_oldest %].</p>
+
+<p>The loans that have not been anonymized are distributed among your patron categories as follows:</p>
+
+<table>
+<tr><th>Category</th><th>Code</th><th>Default privacy</th><th>Number of loans</th></tr>
+[% FOREACH p IN not_anon %]
+<tr><td>[% p.description %]</td><td>[% p.categorycode %]</td><td>[% p.default_privacy %]</td><td>[% p.count %]</td></tr>
+[% END %]
+</table>
+
+<hr><p>Tables:
+<a href="http://schema.koha-community.org/19_05/tables/old_issues.html">old_issues</a>
+</p>
+
+</div>
+<div id="last_borrower">
+
+<h2>Last borrower</h2>
+
+<p>The syspref StoreLastBorrower is set to [% storelastborrower %] ([% IF storelastborrower == 0 %]off[% ELSE %]on[% END%]). 
+You are tracking the last borrower for [% items_last_borrower %] items. 
+The oldest return you are tracking was made on [% items_last_borrower_oldest %].</p>
+
+<hr><p>Tables:
+<a href="http://schema.koha-community.org/19_05/tables/items_last_borrower.html">items_last_borrower</a>
+</p>
+
+</div>
+<div id="old_reserves">
+
+<h2>Old reserves</h2>
+
+<p>You have [% old_reserves %] old reserves. [% old_reserves_anonymized %] of these have been anonymized. That is [% old_reserves_anonymized * 100 / old_reserves %]%.</p>
+
+<p>The oldest non-anonymized reserve is from [% old_reserves_nonanon_oldest %].</p>
+
+<table>
+<tr><th>Year</th><th>Count</th></tr>
+[% FOREACH a IN old_reserves_age %]
+<tr><td>[% a.year %]</td><td>[% a.count %]</td></tr>
+[% END %]
+</table>
+
+<hr><p>Tables:
+<a href="http://schema.koha-community.org/19_05/tables/old_reserves.html">old_reserves</a>
+</p>
+
+</div>
+<div id="stats">
+
+<h2>Statistics</h2>
+
+<h3>Anonymized</h3>
+
+<p>These are entries in the statistics table where the borrowernumber-field is equal to the borrowernumber of the anonymous patron, or empty.</p>
+
+<table>
+<tr><th>Type</th><th>Count</th></tr>
+[% FOREACH s IN stats_anon %]
+<tr><td>[% s.type %]</td><td>[% s.count %]</td></tr>
+[% END %]
+</table>
+
+<h3>Non-anonymized</h3>
+
+<p>These are entries in the statistics table where the borrowernumber-field is non-empty and not equal to the borrowernumber of the anonymous patron.</p>
+
+<table>
+<tr><th>Type</th><th>Count</th></tr>
+[% FOREACH s IN stats_nonanon %]
+<tr><td>[% s.type %]</td><td>[% s.count %]</td></tr>
+[% END %]
+</table>
+
+<p>Age of non-anonymized entries:</p>
+
+<table>
+<tr><th>Year</th><th>Count</th></tr>
+[% FOREACH a IN stats_age %]
+<tr><td>[% a.year %]</td><td>[% a.count %]</td></tr>
+[% END %]
+</table>
+
+<hr><p>Tables:
+<a href="http://schema.koha-community.org/19_05/tables/statistics.html">statistics</a>
+</p>
+
+</div>
+<div id="messages">
+
+<h2>Messages</h2>
+
+<p>There are [% messages_nonanon %] old messages that have not been anonymized. The oldest such message is from [% messages_nonanon_oldest %].</p>
+
+<p>Age of non-anonymized messages:</p>
+
+<table>
+<tr><th>Year</th><th>Count</th></tr>
+[% FOREACH a IN messages_age %]
+<tr><td>[% a.year %]</td><td>[% a.count %]</td></tr>
+[% END %]
+</table>
+
+<hr><p>Tables:
+<a href="http://schema.koha-community.org/19_05/tables/message_queue.html">message_queue</a>
+</p>
+
+</div>
+<div id="misc">
+
+<h2>Anonymization</h2>
+
+[% IF anonymouspatron != 0 %]
+    <p>You have set AnonymousPatron to something other than 0. Good! Actual value: [% anonymouspatron %].</p>
+[% ELSE %]
+    <p>Oooops, you need to set AnonymousPatron to something else than 0!</p>
+[% END %]
+
+</div>
+<div id="todo">
+
+<h2>TODO</h2>
+
+<ul>
+<li>Logs</li>
+<li>Fines</li>
+<li>Patron consent (see Koha bug 20819)</li>
+</ul>
+
+</div>
+
+</div><!-- Close the "gdprtabs" div -->
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#gdprtabs').tabs();
+    });
+</script>
+
+[% INCLUDE 'intranet-bottom.inc' %]

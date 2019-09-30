@@ -1,0 +1,11 @@
+=pod
+
+=head1 STATE OF GDPR
+
+Tries to give some insights into the state of GDPR-compliance in your Koha instance.
+
+=head1 AUTHOR
+
+Magnus Enger <mmagnus@libriotech.no>
+
+=cut
