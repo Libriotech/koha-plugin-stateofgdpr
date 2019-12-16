@@ -105,7 +105,7 @@
 
 <h2>Old loans</h2>
 
-<p>You have [% old_issues %] old loans. [% old_issues_anonymized %] of these have been anonymized. That is [% old_issues_anonymized * 100 / old_issues %]%.</p>
+<p>You have [% old_issues %] old loans. [% old_issues_anonymized %] of these have been anonymized. [% IF old_issues > 0 %]That is [% old_issues_anonymized * 100 / old_issues %]%.[% END %]</p>
 
 <p>The oldest non-anonymized loan is from [% old_issues_nonanon_oldest %].</p>
 
